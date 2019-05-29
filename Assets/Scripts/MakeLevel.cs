@@ -8,8 +8,8 @@ public class MakeLevel : MonoBehaviour
     public GameObject pacmanPrefab;
     public GameObject cookiePrefab;
 
-    const int level_col = 20;
-    const int level_row = 10;
+    public static string levelData;
+
     void Start()
     {
         InitLevel();
@@ -24,7 +24,7 @@ public class MakeLevel : MonoBehaviour
     {
         // Read the level text file
         TextAsset level = (TextAsset)Resources.Load("level1", typeof(TextAsset));
-        string levelData = level.text;
+        levelData = level.text;
         int col = 0;
         int row = 0;
 
@@ -39,6 +39,9 @@ public class MakeLevel : MonoBehaviour
             {
                 // create pacman
                 Instantiate(pacmanPrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
+
+                print("col = " + col);
+                print("row = " + row);
             }
             else if (levelData[i] == '0')
             {
