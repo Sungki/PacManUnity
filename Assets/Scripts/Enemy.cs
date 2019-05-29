@@ -16,7 +16,7 @@ public class Enemy : MonoBehaviour
         Runaway
     }
 
-    GameObject pacman;
+//    GameObject pacman;
     Rigidbody myRigidbody;
     EnemyState enemyState;
     RaycastHit hitInfo = new RaycastHit();
@@ -26,7 +26,7 @@ public class Enemy : MonoBehaviour
     {
         myRigidbody = GetComponent<Rigidbody>();
         SetState(EnemyState.Patrol);
-        pacman = GameObject.FindGameObjectWithTag("Pacman");
+//        pacman = GameObject.FindGameObjectWithTag("Pacman");
         StartCoroutine(FSMMain());
     }
 
@@ -76,12 +76,12 @@ public class Enemy : MonoBehaviour
             yield return null;
             if (isNewState) break;
             // Action
-            if (pacman != null)
+            if (ScriptLocator.pacman != null)
             {
-                transform.LookAt(pacman.transform);
-                Physics.Raycast(transform.position + transform.forward*1.0f, pacman.transform.position - transform.position, out hitInfo, layerMask);
+                transform.LookAt(ScriptLocator.pacman.transform);
+                Physics.Raycast(transform.position + transform.forward*1.0f, ScriptLocator.pacman.transform.position - transform.position, out hitInfo, layerMask);
 
-                if (hitInfo.transform == pacman.transform)
+                if (hitInfo.transform == ScriptLocator.pacman.transform)
                 {
                     myRigidbody.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
 //                    transform.position = Vector3.MoveTowards(transform.position, pacman.transform.position + transform.forward*1.0f, speed * Time.deltaTime);
@@ -102,9 +102,9 @@ public class Enemy : MonoBehaviour
             yield return null;
             if (isNewState) break;
             // Action
-            if (pacman != null)
+            if (ScriptLocator.pacman != null)
             {
-                if (Vector3.Distance(transform.position, pacman.transform.position) <= startChasing)
+                if (Vector3.Distance(transform.position, ScriptLocator.pacman.transform.position) <= startChasing)
                 {
                     SetState(EnemyState.Chase);
                 }

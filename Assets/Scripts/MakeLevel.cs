@@ -9,7 +9,7 @@ public class MakeLevel : MonoBehaviour
     public GameObject cookiePrefab;
     public GameObject enemyPrefab;
 
-    public static string levelData;
+    public string levelData;
 
     void Start()
     {
@@ -18,7 +18,22 @@ public class MakeLevel : MonoBehaviour
 
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            ScriptLocator.pacman.GetComponent<Pacman>().MoveMotor(Vector3.right);
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            ScriptLocator.pacman.GetComponent<Pacman>().MoveMotor(Vector3.left);
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            ScriptLocator.pacman.GetComponent<Pacman>().MoveMotor(Vector3.forward);
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            ScriptLocator.pacman.GetComponent<Pacman>().MoveMotor(Vector3.back);
+        }
     }
 
     void InitLevel()
