@@ -26,4 +26,12 @@ public class Pacman : MonoBehaviour
     {
         myRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Enemy")
+        {
+            Destroy(gameObject);
+        }
+    }
 }

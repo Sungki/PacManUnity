@@ -7,6 +7,7 @@ public class MakeLevel : MonoBehaviour
     public GameObject blockPrefab;
     public GameObject pacmanPrefab;
     public GameObject cookiePrefab;
+    public GameObject enemyPrefab;
 
     public static string levelData;
 
@@ -47,6 +48,11 @@ public class MakeLevel : MonoBehaviour
             {
                 // create cookies
                 Instantiate(cookiePrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
+            }
+            else if (levelData[i] == '3')
+            {
+                // create enemies
+                Instantiate(enemyPrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
             }
             else if (levelData[i] == '\n')
             {
