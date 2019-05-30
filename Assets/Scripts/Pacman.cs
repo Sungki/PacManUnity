@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pacman : MonoBehaviour
 {
-    public float speed = 5.0f;
+    public float speed = 6.0f;
 
     [HideInInspector] public int mapX = 0;
     [HideInInspector] public int mapY = 0;

@@ -122,8 +122,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2b0a7aa9ed57454bbb4c8aec95e2586, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startChasing: 7
-  speed: 5
+  startChasing: 5
+  speed: 4
   mapX: 0
   mapY: 0
   color: {r: 0, g: 0, b: 0, a: 0}
