@@ -66,9 +66,9 @@ public class Pacman : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if(collision.gameObject.tag == "Enemy")
+        if(other.CompareTag("Enemy"))
         {
             Destroy(gameObject);
         }

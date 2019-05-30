@@ -123,13 +123,39 @@ public class Enemy : MonoBehaviour
                 }
                 //                myRigidbody.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
 
-                if (!isMoving && !MakeLevel.collisionMap[mapX - 1, mapY])
+                if (!isMoving)
                 {
-                    mapX--;
-                    MoveMotor(Vector3.left);
+                    int direction = Random.Range(0, 4);
+                    MoveDirection(direction);
                 }
+
             }
         } while (!isNewState);
+    }
+
+    void MoveDirection(int _direction)
+    {
+        if (_direction == 0 && !MakeLevel.collisionMap[mapX + 1, mapY])
+        {
+            mapX++;
+            MoveMotor(Vector3.right);
+        }
+        else if (_direction == 1 && !MakeLevel.collisionMap[mapX - 1, mapY])
+        {
+            mapX--;
+            MoveMotor(Vector3.left);
+        }
+        else if (_direction == 2 && !MakeLevel.collisionMap[mapX, mapY - 1])
+        {
+            mapY--;
+            MoveMotor(Vector3.forward);
+        }
+        else if (_direction == 3 && !MakeLevel.collisionMap[mapX, mapY + 1])
+        {
+            mapY++;
+            MoveMotor(Vector3.back);
+        }
+
     }
 
     void MoveMotor(Vector3 _direction)
