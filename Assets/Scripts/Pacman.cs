@@ -5,21 +5,20 @@ using UnityEngine;
 public class Pacman : MonoBehaviour
 {
     public float speed = 5.0f;
+
+    [HideInInspector] public int mapX = 0;
+    [HideInInspector] public int mapY = 0;
+
     Vector3 movement;
-    Rigidbody myRigidbody;
     bool isMoving = false;
 
-   // Vector3 direction;
     void Start()
     {
         movement = Vector3.zero;
-        myRigidbody = GetComponent<Rigidbody>();
     }
 
-    public void MoveMotor(Vector3 _direction)
+    void MoveMotor(Vector3 _direction)
     {
-        if (isMoving) return;
-
         movement = transform.position + _direction;
         StartCoroutine(Movement(movement));
     }
@@ -42,18 +41,29 @@ public class Pacman : MonoBehaviour
 
     void Update()
     {
-        //        movement = Vector3.zero;
-        //            movement = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-        //            movement.x = 1.0f;
-
-//        transform.position = Vector3.MoveTowards(transform.position, transform.position+direction, speed * Time.deltaTime);
-
-        //        transform.Translate(movement * speed * Time.deltaTime);
-    }
-
-    private void FixedUpdate()
-    {
-//        myRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
+        if (!isMoving)
+        {
+            if (Input.GetKey(KeyCode.RightArrow) && !MakeLevel.collisionMap[mapX + 1, mapY])
+            {
+                mapX++;
+                MoveMotor(Vector3.right);
+            }
+            else if (Input.GetKey(KeyCode.LeftArrow) && !MakeLevel.collisionMap[mapX - 1, mapY])
+            {
+                mapX--;
+                MoveMotor(Vector3.left);
+            }
+            else if (Input.GetKey(KeyCode.UpArrow) && !MakeLevel.collisionMap[mapX, mapY - 1])
+            {
+                mapY--;
+                MoveMotor(Vector3.forward);
+            }
+            else if (Input.GetKey(KeyCode.DownArrow) && !MakeLevel.collisionMap[mapX, mapY + 1])
+            {
+                mapY++;
+                MoveMotor(Vector3.back);
+            }
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
