@@ -11,8 +11,6 @@ public class Enemy : MonoBehaviour
     [HideInInspector] public int mapY = 0;
     [HideInInspector] public Color color;
 
-    [SerializeField] private LayerMask layerMask;
-
     public enum EnemyState
     {
         Patrol,
@@ -134,8 +132,9 @@ public class Enemy : MonoBehaviour
             {
                 if (!isMoving)
                 {
-                    Vector2 pos = RandomPosition();
-                    PathFinding((int)pos.x, (int)pos.y);
+                    //                    Vector2 pos = RandomPosition();
+                    //                    PathFinding((int)pos.x, (int)pos.y);
+                    BasicMove();
                 }
 
                 if (Vector3.Distance(transform.position, ScriptLocator.pacman.transform.position) <= startChasing)
@@ -410,6 +409,29 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void BasicMove()
+    {
+        if (!GameManager.collisionMap[mapX, mapY - 1])
+        {
+            mapY--;
+            MoveMotor(Vector3.forward);
+        }
+        else if (!GameManager.collisionMap[mapX - 1, mapY])
+        {
+            mapX--;
+            MoveMotor(Vector3.left);
+        }
+        else if (!GameManager.collisionMap[mapX + 1, mapY])
+        {
+            mapX++;
+            MoveMotor(Vector3.right);
+        }
+        else
+        {
+            mapY++;
+            MoveMotor(Vector3.back);
+        }
+    }
     /*    void MoveDirection(int _direction)
         {
             if (_direction == 0 && !MakeLevel.collisionMap[mapX + 1, mapY])

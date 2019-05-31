@@ -421,7 +421,7 @@ GameObject:
   - component: {fileID: 1692843015}
   - component: {fileID: 1692843014}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -634,7 +634,7 @@ MonoBehaviour:
     type: 3}
   enemyPrefab: {fileID: 3532844091292650061, guid: dceb2cac0184b5648bbdbb788377c808,
     type: 3}
-  pacmanPrefab: {fileID: 3805749814924334290, guid: fcbbaac5609d7cb4794ecf96dcb4bf50,
+  pacmanPrefab: {fileID: 2163523616760352222, guid: 1445215b765223e48993407aa5ee1b3f,
     type: 3}
   powerballPrefab: {fileID: 7819053143794123358, guid: 72e59907f32542e43baf55d12c3be2c7,
     type: 3}

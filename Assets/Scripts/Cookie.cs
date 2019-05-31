@@ -8,7 +8,7 @@ public class Cookie : MonoBehaviour
     {
         if(other.CompareTag("Pacman"))
         {
-            GameManager.score++;
+            GameManager.score+=10;
             Destroy(gameObject);
         }
     }

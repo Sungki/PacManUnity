@@ -45,24 +45,29 @@ public class Pacman : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.RightArrow) && !GameManager.collisionMap[mapX + 1, mapY])
             {
+                transform.rotation = Quaternion.Euler(0, 90, 0);
                 mapX++;
                 MoveMotor(Vector3.right);
             }
             else if (Input.GetKey(KeyCode.LeftArrow) && !GameManager.collisionMap[mapX - 1, mapY])
             {
+                transform.rotation = Quaternion.Euler(0, -90, 0);
                 mapX--;
                 MoveMotor(Vector3.left);
             }
             else if (Input.GetKey(KeyCode.UpArrow) && !GameManager.collisionMap[mapX, mapY - 1])
             {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
                 mapY--;
                 MoveMotor(Vector3.forward);
             }
             else if (Input.GetKey(KeyCode.DownArrow) && !GameManager.collisionMap[mapX, mapY + 1])
             {
+                transform.rotation = Quaternion.Euler(0, -180, 0);
                 mapY++;
                 MoveMotor(Vector3.back);
             }
+            print(transform.forward);
         }
     }
 
@@ -71,9 +76,22 @@ public class Pacman : MonoBehaviour
         if(other.CompareTag("Enemy"))
         {
             if (other.GetComponent<Enemy>().enemyState == Enemy.EnemyState.Runaway)
+            {
                 other.gameObject.SendMessage("SetState", Enemy.EnemyState.Goback);
+                GameManager.score += 100;
+            }
             else if (other.GetComponent<Enemy>().enemyState != Enemy.EnemyState.Goback)
-                Destroy(gameObject);
+            {
+                Rigidbody[] allCubes = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Rigidbody>();
+                foreach(Rigidbody cube in allCubes)
+                {
+                    cube.isKinematic = false;
+                    cube.useGravity = true;
+                    cube.AddExplosionForce(500f, transform.position, 1f, 1f);
+                    speed = 0f;
+                    Destroy(gameObject, 3.0f);
+                }
+            }
         }
     }
 }
