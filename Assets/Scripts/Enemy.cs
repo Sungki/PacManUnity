@@ -25,14 +25,11 @@ public class Enemy : MonoBehaviour
     public EnemyState enemyState;
     bool isNewState = false;
     bool isMoving = false;
-    int holdingPos = 0;
-//    Vector3 movement;
 
     void Start()
     {
         rend = GetComponent<Renderer>();
         rend.material.color = color;
-//        movement = Vector3.zero;
         SetState(EnemyState.Patrol);
         StartCoroutine(FSMMain());
     }
@@ -69,6 +66,9 @@ public class Enemy : MonoBehaviour
             }
 
         } while (!isNewState);
+
+        speed = 4.0f;
+        rend.material.color = color;
     }
 
     IEnumerator Runaway()
@@ -87,6 +87,7 @@ public class Enemy : MonoBehaviour
             if (timer > waitingTime)
             {
                 SetState(EnemyState.Patrol);
+                timer = 0.0f;
             }
 
             if (!isMoving)
@@ -96,6 +97,8 @@ public class Enemy : MonoBehaviour
             }
 
         } while (!isNewState);
+
+        rend.material.color = color;
     }
 
     IEnumerator Chase()
@@ -122,9 +125,6 @@ public class Enemy : MonoBehaviour
 
     IEnumerator Patrol()
     {
-        rend.material.color = color;
-        speed = 4.0f;
-
         do
         {
             yield return null;
@@ -148,31 +148,17 @@ public class Enemy : MonoBehaviour
 
     void PathFinding(int _x, int _y)
     {
-        if(holdingPos>0)
-        {
-            if (holdingPos == 1) WalkRight();
-            else if (holdingPos == 2) WalkLeft();
-            else if (holdingPos == 3) WalkUp();
-            else if (holdingPos == 4) WalkDown();
-            else
-            {
-                SetState(EnemyState.Patrol);
-            }
-        }
+        if (_x > mapX && _y == mapY) WalkRight();
+        else if (_x < mapX && _y == mapY) WalkLeft();
+        else if (_x == mapX && _y < mapY) WalkUp();
+        else if (_x == mapX && _y > mapY) WalkDown();
+        else if (_x > mapX && _y > mapY) WalkRightDown();
+        else if (_x < mapX && _y < mapY) WalkLeftUp();
+        else if (_x > mapX && _y < mapY) WalkRightUp();
+        else if (_x < mapX && _y > mapY) WalkLeftDown();
         else
         {
-            if (_x > mapX && _y == mapY) WalkRight();
-            else if (_x < mapX && _y == mapY) WalkLeft();
-            else if (_x == mapX && _y < mapY) WalkUp();
-            else if (_x == mapX && _y > mapY) WalkDown();
-            else if (_x > mapX && _y > mapY) WalkRightDown();
-            else if (_x < mapX && _y < mapY) WalkLeftUp();
-            else if (_x > mapX && _y < mapY) WalkRightUp();
-            else if (_x < mapX && _y > mapY) WalkLeftDown();
-            else
-            {
-                SetState(EnemyState.Patrol);
-            }
+            SetState(EnemyState.Patrol);
         }
     }
 
@@ -208,7 +194,7 @@ public class Enemy : MonoBehaviour
         {
             randX = Random.Range(1, 20);
             randY = Random.Range(1, 16);
-            if (!MakeLevel.collisionMap[randX, randY])
+            if (!GameManager.collisionMap[randX, randY])
             {
                 isPossition = true;
             }
@@ -219,51 +205,37 @@ public class Enemy : MonoBehaviour
 
     void WalkRight()
     {
-        holdingPos = 1;
         print("WalkRight");
-        if (!MakeLevel.collisionMap[mapX + 1, mapY])
+        if (!GameManager.collisionMap[mapX + 1, mapY])
         {
             // walk on right first
             mapX++;
             MoveMotor(Vector3.right);
-            holdingPos = 0;
         }
-        else if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        else if (!GameManager.collisionMap[mapX, mapY + 1])
         {
-            mapY--;
-            MoveMotor(Vector3.forward);
-        }
-        else
-        {
+            // if not, walk on down
             mapY++;
             MoveMotor(Vector3.back);
         }
-        /*        else if (!MakeLevel.collisionMap[mapX, mapY + 1])
-                {
-                    // if not, walk on down
-                    mapY++;
-                    MoveMotor(Vector3.back);
-                }
-                else
-                {
-                    // if not, walk on up
-                    mapY--;
-                    MoveMotor(Vector3.forward);
-                }*/
+        else
+        {
+            // if not, walk on up
+            mapY--;
+            MoveMotor(Vector3.forward);
+        }
     }
 
     void WalkLeft()
     {
-        holdingPos = 2;
         print("WalkLeft");
-        if (!MakeLevel.collisionMap[mapX - 1, mapY])
+        if (!GameManager.collisionMap[mapX - 1, mapY])
         {
             // walk on left first
             mapX--;
             MoveMotor(Vector3.left);
-            holdingPos = 0;
         }
-        else if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        else if (!GameManager.collisionMap[mapX, mapY - 1])
         {
             // if not, walk on up
             mapY--;
@@ -279,16 +251,14 @@ public class Enemy : MonoBehaviour
 
     void WalkUp()
     {
-        holdingPos = 3;
         print("WalkUp");
-        if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        if (!GameManager.collisionMap[mapX, mapY - 1])
         {
             // walk on up first
             mapY--;
             MoveMotor(Vector3.forward);
-            holdingPos = 0;
         }
-        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+        else if (!GameManager.collisionMap[mapX - 1, mapY])
         {
             // if not, walk on left
             mapX--;
@@ -304,16 +274,14 @@ public class Enemy : MonoBehaviour
 
     void WalkDown()
     {
-        holdingPos = 4;
         print("WalkDown");
-        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+        if (!GameManager.collisionMap[mapX, mapY + 1])
         {
             // walk on down first
             mapY++;
             MoveMotor(Vector3.back);
-            holdingPos = 0;
         }
-        else if (!MakeLevel.collisionMap[mapX + 1, mapY])
+        else if (!GameManager.collisionMap[mapX + 1, mapY])
         {
             // if not, walk on right
             mapX++;
@@ -330,20 +298,19 @@ public class Enemy : MonoBehaviour
     void WalkLeftUp()
     {
         print("WalkLeftUp");
-        if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        if (!GameManager.collisionMap[mapX, mapY - 1])
         {
             // walk on up first
             mapY--;
             MoveMotor(Vector3.forward);
-            holdingPos = 0;
         }
-        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+        else if (!GameManager.collisionMap[mapX - 1, mapY])
         {
             // if not, walk on left
             mapX--;
             MoveMotor(Vector3.left);
         }
-        else if(!MakeLevel.collisionMap[mapX + 1, mapY])
+        else if(!GameManager.collisionMap[mapX + 1, mapY])
         {
             // if not, walk on right
             mapX++;
@@ -359,19 +326,19 @@ public class Enemy : MonoBehaviour
     void WalkRightUp()
     {
         print("WalkRightUp");
-        if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        if (!GameManager.collisionMap[mapX, mapY - 1])
         {
             // walk on up first
             mapY--;
             MoveMotor(Vector3.forward);
         }
-        else if (!MakeLevel.collisionMap[mapX + 1, mapY])
+        else if (!GameManager.collisionMap[mapX + 1, mapY])
         {
             // if not, walk on right
             mapX++;
             MoveMotor(Vector3.right);
         }
-        else if (!MakeLevel.collisionMap[mapX, mapY + 1])
+        else if (!GameManager.collisionMap[mapX, mapY + 1])
         {
             // if not, walk on down
             mapY++;
@@ -388,20 +355,19 @@ public class Enemy : MonoBehaviour
     void WalkRightDown()
     {
         print("WalkRightDown");
-        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+        if (!GameManager.collisionMap[mapX, mapY + 1])
         {
             // walk on down first
             mapY++;
             MoveMotor(Vector3.back);
-            holdingPos = 0;
         }
-        else if (!MakeLevel.collisionMap[mapX + 1, mapY])
+        else if (!GameManager.collisionMap[mapX + 1, mapY])
         {
             // if not, walk on right
             mapX++;
             MoveMotor(Vector3.right);
         }
-        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+        else if (!GameManager.collisionMap[mapX - 1, mapY])
         {
             // if not, walk on left
             mapX--;
@@ -418,19 +384,19 @@ public class Enemy : MonoBehaviour
     void WalkLeftDown()
     {
         print("WalkLeftDown");
-        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+        if (!GameManager.collisionMap[mapX, mapY + 1])
         {
             // walk on down first
             mapY++;
             MoveMotor(Vector3.back);
         }
-        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+        else if (!GameManager.collisionMap[mapX - 1, mapY])
         {
             // if not, walk on left
             mapX--;
             MoveMotor(Vector3.left);
         }
-        else if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        else if (!GameManager.collisionMap[mapX, mapY - 1])
         {
             // if not, walk on up
             mapY--;

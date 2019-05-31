@@ -1,27 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class MakeLevel : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     public GameObject blockPrefab;
-    public GameObject pacmanPrefab;
     public GameObject cookiePrefab;
     public GameObject enemyPrefab;
+    public GameObject pacmanPrefab;
     public GameObject powerballPrefab;
 
+    public static int score = 0;
+
     GameObject enemyClone;
+    Text scoreText;
     int enemyCount = 0;
 
-    public static bool[,] collisionMap = new bool[20,17];
+    public static bool[,] collisionMap = new bool[20, 17];
 
     void Start()
     {
+        scoreText = GameObject.Find("Score").GetComponent<Text>();
         InitLevel();
     }
 
     void Update()
     {
+        scoreText.text = "Score: " + score;
     }
 
     void InitLevel()
@@ -40,11 +46,11 @@ public class MakeLevel : MonoBehaviour
                 collisionMap[col, -row] = true;
                 Instantiate(blockPrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
             }
-            else if(levelData[i] == '2')
+            else if (levelData[i] == '2')
             {
                 // create pacman
                 Instantiate(pacmanPrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
-                ScriptLocator.pacman.GetComponent<Pacman>().mapX = col -1;
+                ScriptLocator.pacman.GetComponent<Pacman>().mapX = col - 1;
                 ScriptLocator.pacman.GetComponent<Pacman>().mapY = -row;
             }
             else if (levelData[i] == '0')

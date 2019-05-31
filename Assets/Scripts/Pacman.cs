@@ -43,22 +43,22 @@ public class Pacman : MonoBehaviour
     {
         if (!isMoving)
         {
-            if (Input.GetKey(KeyCode.RightArrow) && !MakeLevel.collisionMap[mapX + 1, mapY])
+            if (Input.GetKey(KeyCode.RightArrow) && !GameManager.collisionMap[mapX + 1, mapY])
             {
                 mapX++;
                 MoveMotor(Vector3.right);
             }
-            else if (Input.GetKey(KeyCode.LeftArrow) && !MakeLevel.collisionMap[mapX - 1, mapY])
+            else if (Input.GetKey(KeyCode.LeftArrow) && !GameManager.collisionMap[mapX - 1, mapY])
             {
                 mapX--;
                 MoveMotor(Vector3.left);
             }
-            else if (Input.GetKey(KeyCode.UpArrow) && !MakeLevel.collisionMap[mapX, mapY - 1])
+            else if (Input.GetKey(KeyCode.UpArrow) && !GameManager.collisionMap[mapX, mapY - 1])
             {
                 mapY--;
                 MoveMotor(Vector3.forward);
             }
-            else if (Input.GetKey(KeyCode.DownArrow) && !MakeLevel.collisionMap[mapX, mapY + 1])
+            else if (Input.GetKey(KeyCode.DownArrow) && !GameManager.collisionMap[mapX, mapY + 1])
             {
                 mapY++;
                 MoveMotor(Vector3.back);
