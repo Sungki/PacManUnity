@@ -23,11 +23,6 @@ public class Enemy : MonoBehaviour
     Renderer[] allRend;
     BackPosition[] allOriginPos;
     Rigidbody[] allRigidbody;
-
-    int originMapX = 0;
-    int originMapY = 0;
-    Vector3 originPos;
-
     bool isNewState = false;
     bool isMoving = false;
 
@@ -38,10 +33,6 @@ public class Enemy : MonoBehaviour
         allRend = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Renderer>();
         foreach (Renderer rend in allRend)
             rend.material.color = color;
-
-        originMapX = mapX;
-        originMapY = mapY;
-        originPos = transform.position;
 
         SetState(EnemyState.Patrol);
         StartCoroutine(FSMMain());

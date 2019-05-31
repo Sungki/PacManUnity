@@ -11,13 +11,12 @@ public class GameManager : MonoBehaviour
     public GameObject pacmanPrefab;
     public GameObject powerballPrefab;
 
-    public int score = 0;
-
     GameObject enemyClone;
     Text scoreText;
     int enemyCount = 0;
+    int score = 0;
 
-    public bool[,] collisionMap = new bool[20, 17];
+    public bool[,] collisionMap = new bool[20, 20];
 
     List<Vector2> enemyPos = new List<Vector2>();
 
@@ -27,8 +26,9 @@ public class GameManager : MonoBehaviour
         InitLevel();
     }
 
-    public void SetScore()
+    public void SetScore(int _score)
     {
+        score += _score;
         scoreText.text = "Score: " + score;
     }
 
