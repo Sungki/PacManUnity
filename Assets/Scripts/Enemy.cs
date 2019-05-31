@@ -23,16 +23,21 @@ public class Enemy : MonoBehaviour
     Renderer rend;
     public EnemyState enemyState;
     bool isNewState = false;
-    Vector3 movement;
     bool isMoving = false;
+//    Vector3 movement;
 
     void Start()
     {
         rend = GetComponent<Renderer>();
         rend.material.color = color;
-        movement = Vector3.zero;
+//        movement = Vector3.zero;
         SetState(EnemyState.Patrol);
         StartCoroutine(FSMMain());
+    }
+
+    void SetStateRunaway()
+    {
+        SetState(EnemyState.Runaway);
     }
 
     void SetState(EnemyState newState)
@@ -53,7 +58,8 @@ public class Enemy : MonoBehaviour
     IEnumerator Runaway()
     {
         float timer = 0.0f;
-        float waitingTime = 5f;
+        float waitingTime = 8f;
+        rend.material.color = Color.blue;
 
         do
         {
@@ -66,7 +72,15 @@ public class Enemy : MonoBehaviour
             {
                 SetState(EnemyState.Patrol);
                 timer = 0;
+                rend.material.color = color;
             }
+
+            if (!isMoving)
+            {
+                Vector2 pos = RandomPosition();
+                PathFinding((int)pos.x, (int)pos.y);
+            }
+
         } while (!isNewState);
     }
 
@@ -89,11 +103,6 @@ public class Enemy : MonoBehaviour
                     SetState(EnemyState.Patrol);
                 }
             }
-            else
-            {
-                SetState(EnemyState.Patrol);
-            }
-
         } while (!isNewState);
     }
 
@@ -106,20 +115,58 @@ public class Enemy : MonoBehaviour
             // Action
             if (ScriptLocator.pacman != null)
             {
+                if(!isMoving)
+                {
+                    Vector2 pos = RandomPosition();
+                    PathFinding((int)pos.x, (int)pos.y);
+                }
+
                 if (Vector3.Distance(transform.position, ScriptLocator.pacman.transform.position) <= startChasing)
                 {
                     SetState(EnemyState.Chase);
                 }
-
-                if (!isMoving)
-                {
-                    Vector2 target = RandomPosition();
-                    print(target);
-                    PathFinding((int)target.x, (int)target.y);
-                }
-
             }
         } while (!isNewState);
+    }
+
+    void PathFinding(int _x, int _y)
+    {
+        if (_x > mapX && _y == mapY) WalkRight();
+        else if (_x < mapX && _y == mapY) WalkLeft();
+        else if (_x == mapX && _y < mapY) WalkUp();
+        else if (_x == mapX && _y > mapY) WalkDown();
+        else if (_x > mapX && _y > mapY) WalkRightDown();
+        else if (_x < mapX && _y < mapY) WalkLeftUp();
+        else if (_x > mapX && _y < mapY) WalkRightUp();
+        else if (_x < mapX && _y > mapY) WalkLeftDown();
+        else
+        {
+            // Not defined
+            print("Not defined");
+            WalkLeftDown();
+        }
+    }
+
+    void MoveMotor(Vector3 _direction)
+    {
+        Vector3 movement = transform.position + _direction;
+        StartCoroutine(Movement(movement));
+    }
+
+    IEnumerator Movement(Vector3 _dest)
+    {
+        isMoving = true;
+        do
+        {
+            yield return null;
+            if (transform.position == _dest)
+            {
+                isMoving = false;
+                break;
+            }
+            transform.position = Vector3.MoveTowards(transform.position, _dest, speed * Time.deltaTime);
+
+        } while (isMoving);
     }
 
     Vector2 RandomPosition()
@@ -143,6 +190,7 @@ public class Enemy : MonoBehaviour
 
     void WalkRight()
     {
+        print("WalkRight");
         if (!MakeLevel.collisionMap[mapX + 1, mapY])
         {
             // walk on right first
@@ -165,6 +213,7 @@ public class Enemy : MonoBehaviour
 
     void WalkLeft()
     {
+        print("WalkLeft");
         if (!MakeLevel.collisionMap[mapX - 1, mapY])
         {
             // walk on left first
@@ -185,8 +234,55 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void WalkUp()
+    {
+        print("WalkUp");
+        if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        {
+            // walk on up first
+            mapY--;
+            MoveMotor(Vector3.forward);
+        }
+        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+        {
+            // if not, walk on left
+            mapX--;
+            MoveMotor(Vector3.left);
+        }
+        else
+        {
+            // if not, walk on right
+            mapX++;
+            MoveMotor(Vector3.right);
+        }
+    }
+
+    void WalkDown()
+    {
+        print("WalkDown");
+        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+        {
+            // walk on down first
+            mapY++;
+            MoveMotor(Vector3.back);
+        }
+        else if (!MakeLevel.collisionMap[mapX + 1, mapY])
+        {
+            // if not, walk on right
+            mapX++;
+            MoveMotor(Vector3.right);
+        }
+        else
+        {
+            //if not, walk on left
+            mapX--;
+            MoveMotor(Vector3.left);
+        }
+    }
+
     void WalkLeftUp()
     {
+        print("WalkLeftUp");
         if (!MakeLevel.collisionMap[mapX, mapY - 1])
         {
             // walk on up first
@@ -214,6 +310,7 @@ public class Enemy : MonoBehaviour
     }
     void WalkRightUp()
     {
+        print("WalkRightUp");
         if (!MakeLevel.collisionMap[mapX, mapY - 1])
         {
             // walk on up first
@@ -226,22 +323,23 @@ public class Enemy : MonoBehaviour
             mapX++;
             MoveMotor(Vector3.right);
         }
-        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
-        {
-            // if not, walk on left
-            mapX--;
-            MoveMotor(Vector3.left);
-        }
-        else
+        else if (!MakeLevel.collisionMap[mapX, mapY + 1])
         {
             // if not, walk on down
             mapY++;
             MoveMotor(Vector3.back);
         }
+        else
+        {
+            // if not, walk on left
+            mapX--;
+            MoveMotor(Vector3.left);
+        }
     }
 
     void WalkRightDown()
     {
+        print("WalkRightDown");
         if (!MakeLevel.collisionMap[mapX, mapY + 1])
         {
             // walk on down first
@@ -259,33 +357,6 @@ public class Enemy : MonoBehaviour
             // if not, walk on left
             mapX--;
             MoveMotor(Vector3.left);
-        }
-        else
-        {
-            //if not, walk on up
-            mapY--;
-            MoveMotor(Vector3.forward);
-        }
-    }
-    void WalkLeftDown()
-    {
-        if (!MakeLevel.collisionMap[mapX, mapY + 1])
-        {
-            // walk on down first
-            mapY++;
-            MoveMotor(Vector3.back);
-        }
-        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
-        {
-            // if not, walk on left
-            mapX--;
-            MoveMotor(Vector3.left);
-        }
-        else if (!MakeLevel.collisionMap[mapX + 1, mapY])
-        {
-            // if not, walk on right
-            mapX++;
-            MoveMotor(Vector3.right);
         }
         else
         {
@@ -295,20 +366,32 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void PathFinding(int _x, int _y)
+    void WalkLeftDown()
     {
-        if(_x > mapX && _y == mapY) WalkRight();
-        else if(_x < mapX && _y == mapY) WalkLeft();
-        else if(_x == mapX && _y < mapY) WalkLeftUp();
-        else if (_x == mapX && _y > mapY) WalkRightDown();
-        else if(_x > mapX && _y > mapY) WalkRightDown();
-        else if (_x < mapX && _y < mapY) WalkLeftUp();
-        else if(_x > mapX && _y < mapY) WalkRightUp();
-        else if (_x < mapX && _y > mapY) WalkLeftDown();
+        print("WalkLeftDown");
+        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+        {
+            // walk on down first
+            mapY++;
+            MoveMotor(Vector3.back);
+        }
+        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+        {
+            // if not, walk on left
+            mapX--;
+            MoveMotor(Vector3.left);
+        }
+        else if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        {
+            // if not, walk on up
+            mapY--;
+            MoveMotor(Vector3.forward);
+        }
         else
         {
-            // Not defined
-            WalkLeftDown();
+            //if not, walk on right
+            mapX++;
+            MoveMotor(Vector3.right);
         }
     }
 
@@ -335,26 +418,4 @@ public class Enemy : MonoBehaviour
             MoveMotor(Vector3.back);
         }
     }*/
-
-    void MoveMotor(Vector3 _direction)
-    {
-        movement = transform.position + _direction;
-        StartCoroutine(Movement(movement));
-    }
-
-    IEnumerator Movement(Vector3 _dest)
-    {
-        isMoving = true;
-        do
-        {
-            yield return null;
-            if (transform.position == _dest)
-            {
-                isMoving = false;
-                break;
-            }
-            transform.position = Vector3.MoveTowards(transform.position, _dest, speed * Time.deltaTime);
-
-        } while (isMoving);
-    }
 }

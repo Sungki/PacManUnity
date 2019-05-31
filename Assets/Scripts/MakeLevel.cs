@@ -8,6 +8,7 @@ public class MakeLevel : MonoBehaviour
     public GameObject pacmanPrefab;
     public GameObject cookiePrefab;
     public GameObject enemyPrefab;
+    public GameObject powerballPrefab;
 
     GameObject enemyClone;
     int enemyCount = 0;
@@ -62,6 +63,11 @@ public class MakeLevel : MonoBehaviour
                 else if (enemyCount == 2) enemyClone.GetComponent<Enemy>().color = Color.cyan;
                 else if (enemyCount == 3) enemyClone.GetComponent<Enemy>().color = Color.black;
                 enemyCount++;
+            }
+            else if (levelData[i] == '4')
+            {
+                // create power ball
+                Instantiate(powerballPrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
             }
             else if (levelData[i] == '\n')
             {

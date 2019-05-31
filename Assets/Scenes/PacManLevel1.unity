@@ -256,8 +256,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
-  m_LocalRotation: {x: -0.5598943, y: 0.010436695, z: -0.007053157, w: -0.8284683}
-  m_LocalPosition: {x: 7.5981307, y: 19.299154, z: -17.382166}
+  m_LocalRotation: {x: -0.58087945, y: 0.0029292607, z: -0.0020898518, w: -0.8139817}
+  m_LocalPosition: {x: 9.718495, y: 17.159178, z: -14.546229}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -375,4 +375,6 @@ MonoBehaviour:
   cookiePrefab: {fileID: 7871425841021535881, guid: 7b5328f2780dc424e8653ae6f15ecf1f,
     type: 3}
   enemyPrefab: {fileID: 3532844091292650061, guid: dceb2cac0184b5648bbdbb788377c808,
+    type: 3}
+  powerballPrefab: {fileID: 7819053143794123358, guid: 72e59907f32542e43baf55d12c3be2c7,
     type: 3}
