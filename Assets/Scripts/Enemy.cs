@@ -17,7 +17,8 @@ public class Enemy : MonoBehaviour
     {
         Patrol,
         Chase,
-        Runaway
+        Runaway,
+        Goback
     }
 
     Renderer rend;
@@ -35,11 +36,6 @@ public class Enemy : MonoBehaviour
         StartCoroutine(FSMMain());
     }
 
-    void SetStateRunaway()
-    {
-        SetState(EnemyState.Runaway);
-    }
-
     void SetState(EnemyState newState)
     {
         isNewState = true;
@@ -53,6 +49,23 @@ public class Enemy : MonoBehaviour
             isNewState = false;
             yield return StartCoroutine(enemyState.ToString());
         }
+    }
+
+    IEnumerator Goback()
+    {
+        rend.material.color = Color.white;
+        speed = 8.0f;
+        do
+        {
+            yield return null;
+            if (isNewState) break;
+
+            if (!isMoving)
+            {
+                PathFinding(10, 9);
+            }
+
+        } while (!isNewState);
     }
 
     IEnumerator Runaway()
@@ -311,111 +324,172 @@ public class Enemy : MonoBehaviour
     void WalkRightUp()
     {
         print("WalkRightUp");
-        if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        if (!MakeLevel.collisionMap[mapX + 1, mapY])
         {
-            // walk on up first
-            mapY--;
-            MoveMotor(Vector3.forward);
-        }
-        else if (!MakeLevel.collisionMap[mapX + 1, mapY])
-        {
-            // if not, walk on right
             mapX++;
             MoveMotor(Vector3.right);
         }
+        else if (!MakeLevel.collisionMap[mapX, mapY - 1])
+        {
+            mapY--;
+            MoveMotor(Vector3.forward);
+        }
         else if (!MakeLevel.collisionMap[mapX, mapY + 1])
         {
-            // if not, walk on down
             mapY++;
             MoveMotor(Vector3.back);
         }
         else
         {
-            // if not, walk on left
             mapX--;
             MoveMotor(Vector3.left);
         }
+        /*        if (!MakeLevel.collisionMap[mapX, mapY - 1])
+                {
+                    // walk on up first
+                    mapY--;
+                    MoveMotor(Vector3.forward);
+                }
+                else if (!MakeLevel.collisionMap[mapX + 1, mapY])
+                {
+                    // if not, walk on right
+                    mapX++;
+                    MoveMotor(Vector3.right);
+                }
+                else if (!MakeLevel.collisionMap[mapX, mapY + 1])
+                {
+                    // if not, walk on down
+                    mapY++;
+                    MoveMotor(Vector3.back);
+                }
+                else
+                {
+                    // if not, walk on left
+                    mapX--;
+                    MoveMotor(Vector3.left);
+                }*/
     }
 
     void WalkRightDown()
     {
         print("WalkRightDown");
-        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+
+        if (!MakeLevel.collisionMap[mapX + 1, mapY])
         {
-            // walk on down first
-            mapY++;
-            MoveMotor(Vector3.back);
-        }
-        else if (!MakeLevel.collisionMap[mapX + 1, mapY])
-        {
-            // if not, walk on right
             mapX++;
             MoveMotor(Vector3.right);
         }
-        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+        else if (!MakeLevel.collisionMap[mapX, mapY + 1])
         {
-            // if not, walk on left
-            mapX--;
-            MoveMotor(Vector3.left);
+            mapY++;
+            MoveMotor(Vector3.back);
         }
-        else
+        else if (!MakeLevel.collisionMap[mapX, mapY - 1])
         {
-            //if not, walk on up
             mapY--;
             MoveMotor(Vector3.forward);
         }
+        else
+        {
+            mapX--;
+            MoveMotor(Vector3.left);
+        }
+        /*        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+                {
+                    // walk on down first
+                    mapY++;
+                    MoveMotor(Vector3.back);
+                }
+                else if (!MakeLevel.collisionMap[mapX + 1, mapY])
+                {
+                    // if not, walk on right
+                    mapX++;
+                    MoveMotor(Vector3.right);
+                }
+                else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+                {
+                    // if not, walk on left
+                    mapX--;
+                    MoveMotor(Vector3.left);
+                }
+                else
+                {
+                    //if not, walk on up
+                    mapY--;
+                    MoveMotor(Vector3.forward);
+                }*/
     }
 
     void WalkLeftDown()
     {
         print("WalkLeftDown");
-        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+        if (!MakeLevel.collisionMap[mapX - 1, mapY])
         {
-            // walk on down first
-            mapY++;
-            MoveMotor(Vector3.back);
-        }
-        else if (!MakeLevel.collisionMap[mapX - 1, mapY])
-        {
-            // if not, walk on left
             mapX--;
             MoveMotor(Vector3.left);
         }
+        else if (!MakeLevel.collisionMap[mapX, mapY + 1])
+        {
+            mapY++;
+            MoveMotor(Vector3.back);
+        }
         else if (!MakeLevel.collisionMap[mapX, mapY - 1])
         {
-            // if not, walk on up
             mapY--;
             MoveMotor(Vector3.forward);
         }
         else
         {
-            //if not, walk on right
             mapX++;
             MoveMotor(Vector3.right);
         }
+        /*        if (!MakeLevel.collisionMap[mapX, mapY + 1])
+                {
+                    // walk on down first
+                    mapY++;
+                    MoveMotor(Vector3.back);
+                }
+                else if (!MakeLevel.collisionMap[mapX - 1, mapY])
+                {
+                    // if not, walk on left
+                    mapX--;
+                    MoveMotor(Vector3.left);
+                }
+                else if (!MakeLevel.collisionMap[mapX, mapY - 1])
+                {
+                    // if not, walk on up
+                    mapY--;
+                    MoveMotor(Vector3.forward);
+                }
+                else
+                {
+                    //if not, walk on right
+                    mapX++;
+                    MoveMotor(Vector3.right);
+                }*/
     }
 
-/*    void MoveDirection(int _direction)
-    {
-        if (_direction == 0 && !MakeLevel.collisionMap[mapX + 1, mapY])
+    /*    void MoveDirection(int _direction)
         {
-            mapX++;
-            MoveMotor(Vector3.right);
-        }
-        else if (_direction == 1 && !MakeLevel.collisionMap[mapX - 1, mapY])
-        {
-            mapX--;
-            MoveMotor(Vector3.left);
-        }
-        else if (_direction == 2 && !MakeLevel.collisionMap[mapX, mapY - 1])
-        {
-            mapY--;
-            MoveMotor(Vector3.forward);
-        }
-        else if (_direction == 3 && !MakeLevel.collisionMap[mapX, mapY + 1])
-        {
-            mapY++;
-            MoveMotor(Vector3.back);
-        }
-    }*/
+            if (_direction == 0 && !MakeLevel.collisionMap[mapX + 1, mapY])
+            {
+                mapX++;
+                MoveMotor(Vector3.right);
+            }
+            else if (_direction == 1 && !MakeLevel.collisionMap[mapX - 1, mapY])
+            {
+                mapX--;
+                MoveMotor(Vector3.left);
+            }
+            else if (_direction == 2 && !MakeLevel.collisionMap[mapX, mapY - 1])
+            {
+                mapY--;
+                MoveMotor(Vector3.forward);
+            }
+            else if (_direction == 3 && !MakeLevel.collisionMap[mapX, mapY + 1])
+            {
+                mapY++;
+                MoveMotor(Vector3.back);
+            }
+        }*/
 }

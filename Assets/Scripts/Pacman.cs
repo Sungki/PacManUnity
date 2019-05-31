@@ -70,9 +70,9 @@ public class Pacman : MonoBehaviour
     {
         if(other.CompareTag("Enemy"))
         {
-            if(other.GetComponent<Enemy>().enemyState == Enemy.EnemyState.Runaway)
-                Destroy(other.gameObject);
-            else
+            if (other.GetComponent<Enemy>().enemyState == Enemy.EnemyState.Runaway)
+                other.gameObject.SendMessage("SetState", Enemy.EnemyState.Goback);
+            else if(other.GetComponent<Enemy>().enemyState != Enemy.EnemyState.Goback)
                 Destroy(gameObject);
         }
     }
