@@ -632,12 +632,13 @@ MonoBehaviour:
     type: 3}
   cookiePrefab: {fileID: 7871425841021535881, guid: 7b5328f2780dc424e8653ae6f15ecf1f,
     type: 3}
-  enemyPrefab: {fileID: 3532844091292650061, guid: dceb2cac0184b5648bbdbb788377c808,
+  enemyPrefab: {fileID: 6768723374789087852, guid: b13461f9b32b2de4d847353f8a858063,
     type: 3}
   pacmanPrefab: {fileID: 2163523616760352222, guid: 1445215b765223e48993407aa5ee1b3f,
     type: 3}
   powerballPrefab: {fileID: 7819053143794123358, guid: 72e59907f32542e43baf55d12c3be2c7,
     type: 3}
+  score: 0
 --- !u!4 &1912589008
 Transform:
   m_ObjectHideFlags: 0

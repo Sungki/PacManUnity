@@ -17,4 +17,19 @@ public class ScriptLocator
             return _pacman;
         }
     }
+
+    private static GameObject _gamemanager;
+    public static GameObject gamemanager
+    {
+        get
+        {
+            if (!_gamemanager)
+            {
+                _gamemanager = GameObject.Find("GameManager");
+
+            }
+
+            return _gamemanager;
+        }
+    }
 }

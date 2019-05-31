@@ -19,6 +19,11 @@ public class Pacman : MonoBehaviour
 
     void MoveMotor(Vector3 _direction)
     {
+        if(_direction==Vector3.right) transform.rotation = Quaternion.Euler(0, 90, 0);
+        else if (_direction == Vector3.left) transform.rotation = Quaternion.Euler(0, -90, 0);
+        else if (_direction == Vector3.forward) transform.rotation = Quaternion.Euler(0, 0, 0);
+        else if (_direction == Vector3.back) transform.rotation = Quaternion.Euler(0, -180, 0);
+
         movement = transform.position + _direction;
         StartCoroutine(Movement(movement));
     }
@@ -43,31 +48,26 @@ public class Pacman : MonoBehaviour
     {
         if (!isMoving)
         {
-            if (Input.GetKey(KeyCode.RightArrow) && !GameManager.collisionMap[mapX + 1, mapY])
+            if (Input.GetKey(KeyCode.RightArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
             {
-                transform.rotation = Quaternion.Euler(0, 90, 0);
                 mapX++;
                 MoveMotor(Vector3.right);
             }
-            else if (Input.GetKey(KeyCode.LeftArrow) && !GameManager.collisionMap[mapX - 1, mapY])
+            else if (Input.GetKey(KeyCode.LeftArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
             {
-                transform.rotation = Quaternion.Euler(0, -90, 0);
                 mapX--;
                 MoveMotor(Vector3.left);
             }
-            else if (Input.GetKey(KeyCode.UpArrow) && !GameManager.collisionMap[mapX, mapY - 1])
+            else if (Input.GetKey(KeyCode.UpArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
             {
-                transform.rotation = Quaternion.Euler(0, 0, 0);
                 mapY--;
                 MoveMotor(Vector3.forward);
             }
-            else if (Input.GetKey(KeyCode.DownArrow) && !GameManager.collisionMap[mapX, mapY + 1])
+            else if (Input.GetKey(KeyCode.DownArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
             {
-                transform.rotation = Quaternion.Euler(0, -180, 0);
                 mapY++;
                 MoveMotor(Vector3.back);
             }
-            print(transform.forward);
         }
     }
 
@@ -78,7 +78,7 @@ public class Pacman : MonoBehaviour
             if (other.GetComponent<Enemy>().enemyState == Enemy.EnemyState.Runaway)
             {
                 other.gameObject.SendMessage("SetState", Enemy.EnemyState.Goback);
-                GameManager.score += 100;
+                ScriptLocator.gamemanager.GetComponent<GameManager>().score += 100;
             }
             else if (other.GetComponent<Enemy>().enemyState != Enemy.EnemyState.Goback)
             {

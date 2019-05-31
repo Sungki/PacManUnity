@@ -18,16 +18,31 @@ public class Enemy : MonoBehaviour
         Runaway,
         Goback
     }
-
-    Renderer rend;
     public EnemyState enemyState;
+
+    Renderer[] allRend;
+    BackPosition[] allOriginPos;
+    Rigidbody[] allRigidbody;
+
+    int originMapX = 0;
+    int originMapY = 0;
+    Vector3 originPos;
+
     bool isNewState = false;
     bool isMoving = false;
 
     void Start()
     {
-        rend = GetComponent<Renderer>();
-        rend.material.color = color;
+        allRigidbody = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Rigidbody>();
+        allOriginPos = this.gameObject.transform.GetChild(0).GetComponentsInChildren<BackPosition>();
+        allRend = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Renderer>();
+        foreach (Renderer rend in allRend)
+            rend.material.color = color;
+
+        originMapX = mapX;
+        originMapY = mapY;
+        originPos = transform.position;
+
         SetState(EnemyState.Patrol);
         StartCoroutine(FSMMain());
     }
@@ -49,31 +64,35 @@ public class Enemy : MonoBehaviour
 
     IEnumerator Goback()
     {
-        rend.material.color = Color.white;
-        speed = 8.0f;
-        yield return new WaitForSeconds(1.0f);
-
-        do
+        foreach (Rigidbody rb in allRigidbody)
         {
-            yield return null;
-            if (isNewState) break;
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            rb.AddExplosionForce(50f, transform.position, 0.6f, 0.5f);
+            speed = 0f;
+        }
+        yield return new WaitForSeconds(3.0f);
 
-            if (!isMoving)
-            {
-                PathFinding(10, 9);
-            }
+        foreach (Rigidbody rb in allRigidbody)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+        foreach (BackPosition bp in allOriginPos)
+            bp.back = true;
 
-        } while (!isNewState);
+        yield return new WaitForSeconds(3.0f);
 
-        speed = 4.0f;
-        rend.material.color = color;
+        ScriptLocator.gamemanager.GetComponent<GameManager>().SpawnEnemy(color);
+        Destroy(gameObject);
     }
 
     IEnumerator Runaway()
     {
         float timer = 0.0f;
         float waitingTime = 8f;
-        rend.material.color = Color.blue;
+        foreach (Renderer rend in allRend)
+            rend.material.color = Color.blue;
 
         do
         {
@@ -96,7 +115,8 @@ public class Enemy : MonoBehaviour
 
         } while (!isNewState);
 
-        rend.material.color = color;
+        foreach(Renderer rend in allRend)
+            rend.material.color = color;
     }
 
     IEnumerator Chase()
@@ -163,6 +183,11 @@ public class Enemy : MonoBehaviour
 
     void MoveMotor(Vector3 _direction)
     {
+        if (_direction == Vector3.right) transform.rotation = Quaternion.Euler(0, 90, 0);
+        else if (_direction == Vector3.left) transform.rotation = Quaternion.Euler(0, -90, 0);
+        else if (_direction == Vector3.forward) transform.rotation = Quaternion.Euler(0, 0, 0);
+        else if (_direction == Vector3.back) transform.rotation = Quaternion.Euler(0, -180, 0);
+
         Vector3 movement = transform.position + _direction;
         StartCoroutine(Movement(movement));
     }
@@ -193,7 +218,7 @@ public class Enemy : MonoBehaviour
         {
             randX = Random.Range(1, 20);
             randY = Random.Range(1, 16);
-            if (!GameManager.collisionMap[randX, randY])
+            if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[randX, randY])
             {
                 isPossition = true;
             }
@@ -205,13 +230,13 @@ public class Enemy : MonoBehaviour
     void WalkRight()
     {
         print("WalkRight");
-        if (!GameManager.collisionMap[mapX + 1, mapY])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
         {
             // walk on right first
             mapX++;
             MoveMotor(Vector3.right);
         }
-        else if (!GameManager.collisionMap[mapX, mapY + 1])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             // if not, walk on down
             mapY++;
@@ -228,13 +253,13 @@ public class Enemy : MonoBehaviour
     void WalkLeft()
     {
         print("WalkLeft");
-        if (!GameManager.collisionMap[mapX - 1, mapY])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
         {
             // walk on left first
             mapX--;
             MoveMotor(Vector3.left);
         }
-        else if (!GameManager.collisionMap[mapX, mapY - 1])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             // if not, walk on up
             mapY--;
@@ -251,13 +276,13 @@ public class Enemy : MonoBehaviour
     void WalkUp()
     {
         print("WalkUp");
-        if (!GameManager.collisionMap[mapX, mapY - 1])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             // walk on up first
             mapY--;
             MoveMotor(Vector3.forward);
         }
-        else if (!GameManager.collisionMap[mapX - 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
         {
             // if not, walk on left
             mapX--;
@@ -274,13 +299,13 @@ public class Enemy : MonoBehaviour
     void WalkDown()
     {
         print("WalkDown");
-        if (!GameManager.collisionMap[mapX, mapY + 1])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             // walk on down first
             mapY++;
             MoveMotor(Vector3.back);
         }
-        else if (!GameManager.collisionMap[mapX + 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
         {
             // if not, walk on right
             mapX++;
@@ -297,19 +322,19 @@ public class Enemy : MonoBehaviour
     void WalkLeftUp()
     {
         print("WalkLeftUp");
-        if (!GameManager.collisionMap[mapX, mapY - 1])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             // walk on up first
             mapY--;
             MoveMotor(Vector3.forward);
         }
-        else if (!GameManager.collisionMap[mapX - 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
         {
             // if not, walk on left
             mapX--;
             MoveMotor(Vector3.left);
         }
-        else if(!GameManager.collisionMap[mapX + 1, mapY])
+        else if(!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
         {
             // if not, walk on right
             mapX++;
@@ -325,19 +350,19 @@ public class Enemy : MonoBehaviour
     void WalkRightUp()
     {
         print("WalkRightUp");
-        if (!GameManager.collisionMap[mapX, mapY - 1])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             // walk on up first
             mapY--;
             MoveMotor(Vector3.forward);
         }
-        else if (!GameManager.collisionMap[mapX + 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
         {
             // if not, walk on right
             mapX++;
             MoveMotor(Vector3.right);
         }
-        else if (!GameManager.collisionMap[mapX, mapY + 1])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             // if not, walk on down
             mapY++;
@@ -354,19 +379,19 @@ public class Enemy : MonoBehaviour
     void WalkRightDown()
     {
         print("WalkRightDown");
-        if (!GameManager.collisionMap[mapX, mapY + 1])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             // walk on down first
             mapY++;
             MoveMotor(Vector3.back);
         }
-        else if (!GameManager.collisionMap[mapX + 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
         {
             // if not, walk on right
             mapX++;
             MoveMotor(Vector3.right);
         }
-        else if (!GameManager.collisionMap[mapX - 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
         {
             // if not, walk on left
             mapX--;
@@ -383,19 +408,19 @@ public class Enemy : MonoBehaviour
     void WalkLeftDown()
     {
         print("WalkLeftDown");
-        if (!GameManager.collisionMap[mapX, mapY + 1])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             // walk on down first
             mapY++;
             MoveMotor(Vector3.back);
         }
-        else if (!GameManager.collisionMap[mapX - 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
         {
             // if not, walk on left
             mapX--;
             MoveMotor(Vector3.left);
         }
-        else if (!GameManager.collisionMap[mapX, mapY - 1])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             // if not, walk on up
             mapY--;
@@ -411,17 +436,17 @@ public class Enemy : MonoBehaviour
 
     void BasicMove()
     {
-        if (!GameManager.collisionMap[mapX, mapY - 1])
+        if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             mapY--;
             MoveMotor(Vector3.forward);
         }
-        else if (!GameManager.collisionMap[mapX - 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
         {
             mapX--;
             MoveMotor(Vector3.left);
         }
-        else if (!GameManager.collisionMap[mapX + 1, mapY])
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
         {
             mapX++;
             MoveMotor(Vector3.right);
