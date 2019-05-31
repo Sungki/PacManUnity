@@ -51,12 +51,30 @@ public class Pacman : MonoBehaviour
             if (Input.GetKey(KeyCode.RightArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
             {
                 mapX++;
-                MoveMotor(Vector3.right);
+                if (mapX == 19 && mapY == 9)
+                {
+                    // Warp Zone
+                    transform.position = transform.position - new Vector3(17f, 0, 0);
+                    mapX = 1;
+                }
+                else
+                {
+                    MoveMotor(Vector3.right);
+                }
             }
             else if (Input.GetKey(KeyCode.LeftArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
             {
                 mapX--;
-                MoveMotor(Vector3.left);
+                if (mapX == 0 && mapY == 9)
+                {
+                    // Warp Zone
+                    transform.position = transform.position + new Vector3(17f, 0, 0);
+                    mapX = 18;
+                }
+                else
+                {
+                    MoveMotor(Vector3.left);
+                }
             }
             else if (Input.GetKey(KeyCode.UpArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
             {

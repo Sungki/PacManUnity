@@ -118,7 +118,8 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                // Not defined
+                // empty space
+                col++;
             }
         }
     }
