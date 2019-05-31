@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject bananaPrefab;
     public GameObject blockPrefab;
     public GameObject cookiePrefab;
     public GameObject enemyPrefab;
@@ -109,6 +110,11 @@ public class GameManager : MonoBehaviour
             {
                 // create power ball
                 Instantiate(powerballPrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
+            }
+            else if (levelData[i] == '5')
+            {
+                // create a banana
+                Instantiate(bananaPrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
             }
             else if (levelData[i] == '\n')
             {

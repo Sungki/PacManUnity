@@ -628,6 +628,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c143ba1e66093fd459cfbe9c5a344d80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bananaPrefab: {fileID: 8842158675026911080, guid: 06a13c0b877d32f4cb9d040ef5eac52a,
+    type: 3}
   blockPrefab: {fileID: 3873683559949714097, guid: b354e5f9295189e43a0fff5d6a8f9d66,
     type: 3}
   cookiePrefab: {fileID: 7871425841021535881, guid: 7b5328f2780dc424e8653ae6f15ecf1f,
