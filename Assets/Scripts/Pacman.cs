@@ -9,11 +9,16 @@ public class Pacman : MonoBehaviour
     [HideInInspector] public int mapX = 0;
     [HideInInspector] public int mapY = 0;
 
+    BackPosition[] allOriginPos;
+    Rigidbody[] allRigidbody;
     Vector3 movement;
     bool isMoving = false;
+    bool isDead = false;
 
     void Start()
     {
+        allRigidbody = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Rigidbody>();
+        allOriginPos = this.gameObject.transform.GetChild(0).GetComponentsInChildren<BackPosition>();
         movement = Vector3.zero;
     }
 
@@ -58,9 +63,7 @@ public class Pacman : MonoBehaviour
                     mapX = 1;
                 }
                 else
-                {
                     MoveMotor(Vector3.right);
-                }
             }
             else if (Input.GetKey(KeyCode.LeftArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
             {
@@ -72,9 +75,7 @@ public class Pacman : MonoBehaviour
                     mapX = 18;
                 }
                 else
-                {
                     MoveMotor(Vector3.left);
-                }
             }
             else if (Input.GetKey(KeyCode.UpArrow) && !ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
             {
@@ -87,6 +88,9 @@ public class Pacman : MonoBehaviour
                 MoveMotor(Vector3.back);
             }
         }
+
+        // ESC: Quit Game
+        if (Input.GetKey("escape")) Application.Quit();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -100,16 +104,45 @@ public class Pacman : MonoBehaviour
             }
             else if (other.GetComponent<Enemy>().enemyState != Enemy.EnemyState.Goback)
             {
-                Rigidbody[] allCubes = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Rigidbody>();
-                foreach(Rigidbody cube in allCubes)
+                this.gameObject.GetComponent<SphereCollider>().isTrigger = false;
+                //                Rigidbody[] allCubes = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Rigidbody>();
+                foreach (Rigidbody rb in allRigidbody)
                 {
-                    cube.isKinematic = false;
-                    cube.useGravity = true;
-                    cube.AddExplosionForce(500f, transform.position, 1f, 1f);
+                    rb.isKinematic = false;
+                    rb.useGravity = true;
+                    //                    rb.AddExplosionForce(50f, transform.position, 0.6f, 0.5f);
+                    rb.AddExplosionForce(400f, transform.position, 1f, 1f);
                     speed = 0f;
-                    Destroy(gameObject, 3.0f);
+//                    Destroy(gameObject, 3.0f);
                 }
+
+                if (!isDead)
+                {
+                    isDead = true;
+                    ScriptLocator.gamemanager.GetComponent<GameManager>().numLife--;
+                }
+
+                if (ScriptLocator.gamemanager.GetComponent<GameManager>().numLife>0)
+                    StartCoroutine(Revival());
             }
         }
+    }
+
+    IEnumerator Revival()
+    {
+        yield return new WaitForSeconds(3.0f);
+
+        foreach (Rigidbody rb in allRigidbody)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+        foreach (BackPosition bp in allOriginPos)
+            bp.back = true;
+
+        yield return new WaitForSeconds(3.0f);
+
+        ScriptLocator.gamemanager.GetComponent<GameManager>().SpawnPacman();
+        Destroy(gameObject);
     }
 }

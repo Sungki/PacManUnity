@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,18 +13,24 @@ public class GameManager : MonoBehaviour
     public GameObject pacmanPrefab;
     public GameObject powerballPrefab;
 
-    GameObject enemyClone;
-    Text scoreText;
-    int enemyCount = 0;
-    int score = 0;
-
+    public int numLife = 3;
+    public int cookieCount = 0;
     public bool[,] collisionMap = new bool[20, 20];
 
     List<Vector2> enemyPos = new List<Vector2>();
+    GameObject enemyClone;
+    Text scoreText;
+    Image pacmanLife1;
+    Image pacmanLife2;
+    Vector2 pacmanPos;
+    int enemyCount = 0;
+    int score = 0;
 
     void Start()
     {
         scoreText = GameObject.Find("Score").GetComponent<Text>();
+        pacmanLife1 = GameObject.Find("Life1").GetComponent<Image>();
+        pacmanLife2 = GameObject.Find("Life2").GetComponent<Image>();
         InitLevel();
     }
 
@@ -31,6 +38,36 @@ public class GameManager : MonoBehaviour
     {
         score += _score;
         scoreText.text = "Score: " + score;
+    }
+
+    public void SpawnPacman()
+    {
+        if (numLife == 2) pacmanLife2.enabled = false;
+        else if (numLife == 1)
+        {
+            pacmanLife2.enabled = false;
+            pacmanLife1.enabled = false;
+        }
+        enemyClone = Instantiate(pacmanPrefab, new Vector3(pacmanPos.x, 0.5f, pacmanPos.y), Quaternion.identity);
+        enemyClone.GetComponent<Pacman>().mapX = (int)pacmanPos.x;
+        enemyClone.GetComponent<Pacman>().mapY = -(int)pacmanPos.y;
+    }
+
+    private void OnGUI()
+    {
+        if (numLife <= 0 || cookieCount<=0)
+        {
+            if(cookieCount <=0 && ScriptLocator.pacman != null) Destroy(ScriptLocator.pacman.gameObject);
+
+            if (GUI.Button(new Rect(Screen.width / 2 - 150, Screen.height / 2, 300, 100), "Do you want to Continue?"))
+            {
+                SceneManager.LoadScene("PacManLevel1");
+            }
+            if (GUI.Button(new Rect(Screen.width / 2 - 150, Screen.height / 2 + 150, 300, 100), "Do you want to Quit?"))
+            {
+                Application.Quit();
+            }
+        }
     }
 
     public void SpawnEnemy(Color color)
@@ -87,10 +124,12 @@ public class GameManager : MonoBehaviour
                 Instantiate(pacmanPrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
                 ScriptLocator.pacman.GetComponent<Pacman>().mapX = col - 1;
                 ScriptLocator.pacman.GetComponent<Pacman>().mapY = -row;
+                pacmanPos = new Vector2(col - 1, row);
             }
             else if (levelData[i] == '0')
             {
                 // create cookies
+                cookieCount++;
                 Instantiate(cookiePrefab, new Vector3(col++, 0.5f, row), Quaternion.identity);
             }
             else if (levelData[i] == '3')

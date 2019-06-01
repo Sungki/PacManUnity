@@ -17,8 +17,9 @@ public class PowerBall : MonoBehaviour
     {
         GameObject[] allEnemy = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject e in allEnemy)
-        {
             e.gameObject.SendMessage("SetState",Enemy.EnemyState.Runaway);
-        }
+
+        foreach (GameObject e in allEnemy)
+            e.gameObject.SendMessage("SetState", Enemy.EnemyState.Runaway);
     }
 }

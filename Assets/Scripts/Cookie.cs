@@ -8,6 +8,7 @@ public class Cookie : MonoBehaviour
     {
         if(other.CompareTag("Pacman"))
         {
+            ScriptLocator.gamemanager.GetComponent<GameManager>().cookieCount--;
             ScriptLocator.gamemanager.GetComponent<GameManager>().SetScore(10);
             Destroy(gameObject);
         }
