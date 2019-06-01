@@ -11,7 +11,6 @@ public class Pacman : MonoBehaviour
 
     BackPosition[] allOriginPos;
     Rigidbody[] allRigidbody;
-    Vector3 movement;
     bool isMoving = false;
     bool isDead = false;
 
@@ -19,7 +18,6 @@ public class Pacman : MonoBehaviour
     {
         allRigidbody = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Rigidbody>();
         allOriginPos = this.gameObject.transform.GetChild(0).GetComponentsInChildren<BackPosition>();
-        movement = Vector3.zero;
     }
 
     void MoveMotor(Vector3 _direction)
@@ -29,7 +27,7 @@ public class Pacman : MonoBehaviour
         else if (_direction == Vector3.forward) transform.rotation = Quaternion.Euler(0, 0, 0);
         else if (_direction == Vector3.back) transform.rotation = Quaternion.Euler(0, -180, 0);
 
-        movement = transform.position + _direction;
+        Vector3 movement = transform.position + _direction;
         StartCoroutine(Movement(movement));
     }
 

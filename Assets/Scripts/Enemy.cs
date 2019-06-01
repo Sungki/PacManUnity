@@ -69,8 +69,11 @@ public class Enemy : MonoBehaviour
             rb.isKinematic = true;
             rb.useGravity = false;
         }
+
         foreach (BackPosition bp in allOriginPos)
+        {
             bp.back = true;
+        }
 
         yield return new WaitForSeconds(3.0f);
 
@@ -81,9 +84,13 @@ public class Enemy : MonoBehaviour
     IEnumerator Runaway()
     {
         float timer = 0.0f;
-        float waitingTime = 8f;
+        int countWait = 0;
+        float colorTime = 0.25f;
+
         foreach (Renderer rend in allRend)
+        {
             rend.material.color = Color.blue;
+        }
 
         do
         {
@@ -92,10 +99,27 @@ public class Enemy : MonoBehaviour
             // Action
             timer += Time.deltaTime;
 
-            if (timer > waitingTime)
+            if (timer > colorTime)
             {
-                SetState(EnemyState.Patrol);
+                countWait++;
                 timer = 0.0f;
+                if (countWait%2==0)
+                {
+                    foreach (Renderer rend in allRend)
+                        rend.material.color = Color.blue;
+                }
+                else
+                {
+                    foreach (Renderer rend in allRend)
+                        rend.material.color = Color.white;
+                }
+            }
+
+            if (countWait>32)
+            {
+                timer = 0.0f;
+                countWait = 0;
+                SetState(EnemyState.Patrol);
             }
 
             if (!isMoving)
@@ -106,8 +130,10 @@ public class Enemy : MonoBehaviour
 
         } while (!isNewState);
 
-        foreach(Renderer rend in allRend)
+        foreach (Renderer rend in allRend)
+        {
             rend.material.color = color;
+        }
     }
 
     IEnumerator Chase()
@@ -134,6 +160,9 @@ public class Enemy : MonoBehaviour
 
     IEnumerator Patrol()
     {
+        int countMove = 0;
+        Vector2 pos = Vector2.zero;
+
         do
         {
             yield return null;
@@ -143,9 +172,13 @@ public class Enemy : MonoBehaviour
             {
                 if (!isMoving)
                 {
-                    //                    Vector2 pos = RandomPosition();
-                    //                    PathFinding((int)pos.x, (int)pos.y);
-                    BasicMove();
+                    countMove++;
+                    if(countMove >= 5)
+                    {
+                        countMove = 0;
+                        pos = RandomPosition();
+                    }
+                    PathFinding((int)pos.x, (int)pos.y);
                 }
 
                 if (Vector3.Distance(transform.position, ScriptLocator.pacman.transform.position) <= startChasing)
@@ -168,7 +201,8 @@ public class Enemy : MonoBehaviour
         else if (_x < mapX && _y > mapY) WalkLeftDown();
         else
         {
-            SetState(EnemyState.Patrol);
+            if(enemyState!= EnemyState.Runaway)
+                SetState(EnemyState.Patrol);
         }
     }
 
@@ -208,7 +242,8 @@ public class Enemy : MonoBehaviour
         do
         {
             randX = Random.Range(1, 20);
-            randY = Random.Range(1, 16);
+            randY = Random.Range(1, 20);
+
             if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[randX, randY])
             {
                 isPossition = true;
@@ -220,7 +255,6 @@ public class Enemy : MonoBehaviour
 
     void WalkRight()
     {
-        print("WalkRight");
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX + 1, mapY])
         {
             // walk on right first
@@ -243,7 +277,6 @@ public class Enemy : MonoBehaviour
 
     void WalkLeft()
     {
-        print("WalkLeft");
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX - 1, mapY])
         {
             // walk on left first
@@ -266,7 +299,6 @@ public class Enemy : MonoBehaviour
 
     void WalkUp()
     {
-        print("WalkUp");
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             // walk on up first
@@ -289,7 +321,6 @@ public class Enemy : MonoBehaviour
 
     void WalkDown()
     {
-        print("WalkDown");
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             // walk on down first
@@ -312,7 +343,6 @@ public class Enemy : MonoBehaviour
 
     void WalkLeftUp()
     {
-        print("WalkLeftUp");
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             // walk on up first
@@ -340,7 +370,6 @@ public class Enemy : MonoBehaviour
     }
     void WalkRightUp()
     {
-        print("WalkRightUp");
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
             // walk on up first
@@ -369,7 +398,6 @@ public class Enemy : MonoBehaviour
 
     void WalkRightDown()
     {
-        print("WalkRightDown");
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             // walk on down first
@@ -398,7 +426,6 @@ public class Enemy : MonoBehaviour
 
     void WalkLeftDown()
     {
-        print("WalkLeftDown");
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             // walk on down first
@@ -425,7 +452,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void BasicMove()
+    /*void BasicMove()
     {
         if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY - 1])
         {
@@ -442,13 +469,13 @@ public class Enemy : MonoBehaviour
             mapX++;
             MoveMotor(Vector3.right);
         }
-        else
+        else if (!ScriptLocator.gamemanager.GetComponent<GameManager>().collisionMap[mapX, mapY + 1])
         {
             mapY++;
             MoveMotor(Vector3.back);
         }
     }
-    /*    void MoveDirection(int _direction)
+        void MoveDirection(int _direction)
         {
             if (_direction == 0 && !MakeLevel.collisionMap[mapX + 1, mapY])
             {

@@ -13,9 +13,9 @@ public class GameManager : MonoBehaviour
     public GameObject pacmanPrefab;
     public GameObject powerballPrefab;
 
-    public int numLife = 3;
-    public int cookieCount = 0;
     public bool[,] collisionMap = new bool[20, 20];
+    [HideInInspector] public int numLife = 3;
+    [HideInInspector] public int cookieCount = 0;
 
     List<Vector2> enemyPos = new List<Vector2>();
     GameObject enemyClone;

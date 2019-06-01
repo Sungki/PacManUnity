@@ -396,13 +396,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
-  m_LocalRotation: {x: 0.5808806, y: 0, z: 0, w: 0.8139888}
-  m_LocalPosition: {x: 9.74, y: 16.04, z: -16.69}
+  m_LocalRotation: {x: 0.54560703, y: 0.00053434743, z: 0.0019957162, w: 0.8380386}
+  m_LocalPosition: {x: 9.74, y: 13.67, z: -17.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 71.025, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 66.132, y: 0.43500003, z: 0.55600005}
 --- !u!1 &1399485897
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,6 +790,8 @@ MonoBehaviour:
     type: 3}
   powerballPrefab: {fileID: 7819053143794123358, guid: 72e59907f32542e43baf55d12c3be2c7,
     type: 3}
+  numLife: 3
+  cookieCount: 0
 --- !u!4 &1912589008
 Transform:
   m_ObjectHideFlags: 0
