@@ -42,12 +42,10 @@ public class GameManager : MonoBehaviour
 
     public void SpawnPacman()
     {
-        if (numLife == 2) pacmanLife2.enabled = false;
-        else if (numLife == 1)
-        {
-            pacmanLife2.enabled = false;
+        pacmanLife2.enabled = false;
+        if (numLife <= 1)
             pacmanLife1.enabled = false;
-        }
+
         enemyClone = Instantiate(pacmanPrefab, new Vector3(pacmanPos.x, 0.5f, pacmanPos.y), Quaternion.identity);
         enemyClone.GetComponent<Pacman>().mapX = (int)pacmanPos.x;
         enemyClone.GetComponent<Pacman>().mapY = -(int)pacmanPos.y;

@@ -103,15 +103,12 @@ public class Pacman : MonoBehaviour
             else if (other.GetComponent<Enemy>().enemyState != Enemy.EnemyState.Goback)
             {
                 this.gameObject.GetComponent<SphereCollider>().isTrigger = false;
-                //                Rigidbody[] allCubes = this.gameObject.transform.GetChild(0).GetComponentsInChildren<Rigidbody>();
                 foreach (Rigidbody rb in allRigidbody)
                 {
                     rb.isKinematic = false;
                     rb.useGravity = true;
-                    //                    rb.AddExplosionForce(50f, transform.position, 0.6f, 0.5f);
                     rb.AddExplosionForce(400f, transform.position, 1f, 1f);
                     speed = 0f;
-//                    Destroy(gameObject, 3.0f);
                 }
 
                 if (!isDead)
